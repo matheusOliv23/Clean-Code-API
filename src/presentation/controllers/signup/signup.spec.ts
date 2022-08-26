@@ -10,7 +10,7 @@ import {
   AddAccountModel,
   EmailValidator,
 } from "./signup-protocols";
-import { resolve } from "path";
+
 
 interface SutTypes {
   sut: SignUpController;
