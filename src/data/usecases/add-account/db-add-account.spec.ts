@@ -39,7 +39,7 @@ const makeAddAccountRepository = (): AddAccountRepository => {
 const makeSut = (): SutTypes => {
   const encrypterStub = makeEncrypter();
   const addAccountRepositoryStub = makeAddAccountRepository();
-  const sut = new DbAddAccount(encrypterStub);
+  const sut = new DbAddAccount(encrypterStub, addAccountRepositoryStub);
   return { sut, encrypterStub, addAccountRepositoryStub };
 };
 
@@ -86,5 +86,21 @@ describe("DbAccount Usecase", () => {
       email: "valid_email",
       password: "hashed_password",
     });
+  });
+
+  test("Should throw if AddAccountRepository throws", async () => {
+    const { sut, addAccountRepositoryStub } = makeSut();
+    jest
+      .spyOn(addAccountRepositoryStub, "add")
+      .mockReturnValueOnce(
+        new Promise((resolve, reject) => reject(new Error()))
+      );
+    const accountData = {
+      name: "valid_name",
+      email: "valid_email",
+      password: "valid_password",
+    };
+    const promise = sut.add(accountData);
+    expect(promise).rejects.toThrow();
   });
 });
